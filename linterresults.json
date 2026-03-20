@@ -1,0 +1,3856 @@
+{
+  "list": {
+    "objects": [
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-01T14:01:09.783Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python_exec_rule-subprocess-popen-shell-true",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.011398353Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.011398353Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "2b3ca336b3",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "c7863b10e3b219b9d143fa6db6e312ad00e129bd466e8b79790e9f60fac3e2d5"
+          ],
+          "level": "LINTER_RESULT_LEVEL_ERROR",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 6,
+                    "end_line": 48,
+                    "snippet": {
+                      "text": "def grep_processes():\n    name = request.args.get(\"name\")\n    # vulnerability: Remote Code Execution\n    res = subprocess.run(\n        [\"ps aux | grep \" + name + \" | awk '{print $11}'\"],\n        shell=True,\n        capture_output=True,\n    )\n    if res.stdout is None:\n        return jsonify({\"error\": \"no stdout returned\"})\n    out = res.stdout.decode(\"utf-8\")"
+                    },
+                    "start_column": 11,
+                    "start_line": 44
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Problem:\nFound `subprocess` function `run` with `shell=True`. This is dangerous because this call will\nspawn the command using a shell process. Doing so propagates current shell settings\nand variables, which makes it much easier for a malicious actor to execute commands.\n\nSolution:\nUse `shell=False` instead.\n"
+            },
+            "properties": {},
+            "rule_id": "python_exec_rule-subprocess-popen-shell-true"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "cwes": [
+              "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+            ],
+            "description": "Insecure Shell Invocation with subprocess.Popen(shell=True)",
+            "explanation": "Found `subprocess` function `$FUNC` with `shell=True`. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands.\n",
+            "impact": "HIGH",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "",
+            "remediation": "Use `shell=False` instead.\n",
+            "rule_name": "Insecure Shell Invocation with subprocess.Popen(shell=True)",
+            "rule_uuid": "67521de40a1a5fac2ddf21a9",
+            "rule_version": "v1.0.0",
+            "severity": "CRITICAL",
+            "tags": [
+              "A03:2021",
+              "Injection",
+              "OWASP-Top-10",
+              "SANS-Top-25"
+            ]
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67ebf1a50116fae4a71a3813"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-01T14:01:09.853Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python_pickle_deserialization",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.025715220Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.025715220Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "93595875e5",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "7dbaa7030ec659c9c34ad254e87faa3c14c41d0ae9ae3567e3dda13db16e62c6"
+          ],
+          "level": "LINTER_RESULT_LEVEL_WARNING",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 61,
+                    "snippet": {
+                      "text": "    pickled = request.form.get('pickled')\n    data = base64.urlsafe_b64decode(pickled)\n    # vulnerability: Insecure Deserialization\n    deserialized = pickle.loads(data)\n    return jsonify({\"success\": True, \"description\": str(deserialized)})"
+                    },
+                    "start_column": 20,
+                    "start_line": 61
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Problem:\nThe application was found using `pickle` which is vulnerable to deserialization attacks. Deserialization attacks exploit the\nprocess of reading serialized data and turning it back into an object. By constructing malicious objects and serializing them,\nan adversary may attempt to:\n- Inject code that is executed upon object construction, which occurs during the deserialization process\n- Exploit mass assignment by including fields that are not normally a part of the serialized data but are read in during deserialization\n\nSolution:\nConsider safer alternatives such as serializing data in the JSON format. Ensure any format chosen allows the application to\nspecify exactly which object types are allowed to be deserialized. To protect against mass assignment, only allow\ndeserialization of the specific fields that are required. If this is not easily done, consider creating an intermediary type\nthat can be serialized with only the necessary fields exposed.\n\nExample JSON deserializer using an intermediary type that is validated against a schema to ensure it is safe from mass assignment:\n```\nimport jsonschema\n\n# Create a schema to validate our user-supplied input against\n# an intermediary object\nintermediary_schema = {\n    \"type\": \"object\",\n    \"properties\": {\n        \"name\": {\"type\": \"string\"}\n    },\n    \"required\": [\"name\"],\n    # Protect against random properties being added to the object\n    \"additionalProperties\": False,\n}\n# If a user attempted to add \"'is_admin': True\" it would cause a validation error\nintermediary_object = {'name': 'test user'}\n\ntry:\n    # Validate the user supplied intermediary object against our schema\n    jsonschema.validate(instance=intermediary_object, schema=intermediary_schema)\n    user_object = {\n        'user': {\n            # Assign the deserialized data from intermediary object\n            'name': intermediary_object['name'],\n            # Add in protected data in object definition (or set it from a class constructor)\n            'is_admin': False,\n        }\n    }\n    # Work with the user_object\nexcept jsonschema.exceptions.ValidationError as ex:\n    # Gracefully handle validation errors\n    # ...\n```\n\nFor more details on deserialization attacks in general, see OWASP's guide:\n- https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html\n"
+            },
+            "properties": {},
+            "rule_id": "python_pickle_deserialization"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "cwes": [
+              "CWE-502: Deserialization of Untrusted Data"
+            ],
+            "description": "Insecure Deserialization in Python's Pickle Library",
+            "explanation": "The application was found using `pickle` which is vulnerable to deserialization attacks. Deserialization attacks exploit the process of reading serialized data and turning it back into an object. By constructing malicious objects and serializing them, an adversary may attempt to: - Inject code that is executed upon object construction, which occurs during the deserialization process - Exploit mass assignment by including fields that are not normally a part of the serialized data but are read in during deserialization\n",
+            "impact": "HIGH",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "",
+            "remediation": "Consider safer alternatives such as serializing data in the JSON format. Ensure any format chosen allows the application to specify exactly which object types are allowed to be deserialized. To protect against mass assignment, only allow deserialization of the specific fields that are required. If this is not easily done, consider creating an intermediary type that can be serialized with only the necessary fields exposed.\n",
+            "rule_name": "Insecure Deserialization in Python's Pickle Library",
+            "rule_uuid": "679be580ce68fb361a7ada95",
+            "rule_version": "v1.0.0",
+            "severity": "CRITICAL",
+            "tags": [
+              "A08:2021",
+              "OWASP-Top-10",
+              "SANS-Top-25",
+              "Software-and-Data-Integrity-Failures"
+            ]
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67ebf1a549146631df7af79b"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-01T14:01:09.809Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-flask-open-redirect",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.592525767Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.592525767Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "edd9ac27f9",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "1865b2591725df1429c9588bb596a67621489962104efbb01f95dc9bdf719d2d"
+          ],
+          "level": "LINTER_RESULT_LEVEL_WARNING",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 29,
+                    "end_line": 46,
+                    "snippet": {
+                      "text": "    result = query_db(query, (username, password), True)\n    if result is None:\n        # vulnerability: Open Redirect\n        return redirect(url)\n    session[\"user_info\"] = (result[0], result[1], result[2])\n    return jsonify({\"success\": True})"
+                    },
+                    "start_column": 16,
+                    "start_line": 46
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Problem:\nThe application uses user-controlled input to determine the destination URL in redirection logic, potentially leading to an open redirect vulnerability. This issue allows attackers to redirect users to malicious websites, enabling phishing attacks or other social engineering exploits. \n\nIn Flask applications, passing untrusted input from sources like query parameters (e.g., `request.args.get`) directly to `redirect()` functions without validation or sanitization is particularly risky. \n\nKey risks of open redirects include:\n* Phishing attacks: Attackers can redirect users to malicious sites that appear legitimate.\n* Loss of user trust: Victims may associate the malicious activity with your application.\n\nSolution:\nTo remediate this issue, validate the input used in redirection logic by implementing a whitelist of trusted URLs or domains. Reject any URLs that are not explicitly trusted.\n\nExample using a whitelist in Python Flask:\n```\nSAFE_URLS = ['https://trusted.com', 'https://another-trusted.com']\n\n@app.route('/redirect')\ndef safe_redirect():\n    target = request.args.get('target')\n    if target in SAFE_URLS:\n        return redirect(target)\n    else:\n        return abort(400)\n```\n\nThis example ensures that only URLs listed in `SAFE_URLS` are allowed, and any untrusted input results in a `400 Bad Request`.\n\nFor more information on open redirect vulnerabilities, see:\n- OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Open_Redirect_Cheat_Sheet.html\n"
+            },
+            "properties": {},
+            "rule_id": "python-flask-open-redirect"
+          },
+          "semgrep": {
+            "confidence": "LOW",
+            "cwes": [
+              "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+            ],
+            "description": "Potential Open Redirect Vulnerability in Flask Application",
+            "explanation": "The Semgrep rule detects potential open redirect vulnerabilities in Python Flask applications. An open redirect occurs when an application accepts untrusted input that could cause it to redirect users to an external, potentially malicious URL. This can lead to phishing attacks, where users are tricked into visiting a malicious site that appears legitimate. The rule identifies patterns where user-controlled input from request parameters is used in redirect functions without proper validation or sanitization.",
+            "impact": "MEDIUM",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "To remediate open redirect vulnerabilities, ensure that any URL redirection is validated against a list of trusted URLs or domains. Avoid using user input directly in redirection functions. Instead, use a whitelist approach to validate URLs.\n\nExample remediation in Python Flask:\n```python\nSAFE_URLS = ['https://trusted.com', 'https://another-trusted.com']\n\n@app.route('/redirect')\ndef safe_redirect():\n    target = request.args.get('target')\n    if target in SAFE_URLS:\n        return redirect(target)\n    else:\n        return abort(400)\n```\nThis code checks if the target URL is in a predefined list of safe URLs before redirecting, preventing open redirects to untrusted sites.",
+            "rule_name": "Potential Open Redirect Vulnerability in Flask Application",
+            "rule_uuid": "67855892509038ade6d3b4d9",
+            "rule_version": "v1.0.0",
+            "severity": "LOW",
+            "tags": [
+              "A01:2021",
+              "Broken-Access-Control",
+              "OWASP-Top-10"
+            ]
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67ebf1a5967ecb84827b084b"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:57.995Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:57.995030316Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:57.995030316Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "f729cf912b",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "0325ef9ba00f634729f8406bad00e8e9828233b6b959e0fb2f441fac80b2d64a"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 56,
+                    "end_line": 50,
+                    "snippet": {
+                      "text": "        capture_output=True,\n    )\n    if res.stdout is None:\n        return jsonify({\"error\": \"no stdout returned\"})\n    out = res.stdout.decode(\"utf-8\")\n    names = out.split(\"\\n\")\n    return jsonify({\"success\": True, \"names\": names})"
+                    },
+                    "start_column": 16,
+                    "start_line": 50
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3549146631dfc2714e"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.598Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.598602144Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.598602144Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "2c846a2fc5",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "e1dc2ef2017daa71e55ab87617675a761ac6b77a9f64626b23ab9af066764651"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 66,
+                    "end_line": 47,
+                    "snippet": {
+                      "text": "        query_db(query, [], False, True)\n        return jsonify({\"success\": True})\n    except sqlite3.Error as err:\n        return jsonify({\"error\": \"could not create user:\" + err})"
+                    },
+                    "start_column": 16,
+                    "start_line": 47
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb360116fae4a761b184"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.871Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.871373137Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.871373137Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "8b351d8b4a",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "32b72b0f3d808d278031c72d5206ec8c67ad00d5391ac99fe847d0ae1f5353bc"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 83,
+                    "end_line": 18,
+                    "snippet": {
+                      "text": "\n    access_level = user_info[2]\n    if access_level != 0:\n        return jsonify({\"error\": \"access level of 0 is required for this action\"})\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    access_level = request.form.get(\"access_level\")"
+                    },
+                    "start_column": 16,
+                    "start_line": 18
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb360aa70b0637d33ac3"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.669Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.669481996Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.669481996Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "fc80bac635",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "3c63ce398131645ca568403dbd6311645701003d6e1d2c21ced273152ed46f10"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 64,
+                    "end_line": 24,
+                    "snippet": {
+                      "text": "        return jsonify({\"error\": \"filename parameter is required\"})\n    text_param = request.form.get(\"text\")\n    if text_param is None:\n        return jsonify({\"error\": \"text parameter is required\"})\n\n    user_id = user_info[0]\n    user_dir = \"data/\" + str(user_id)"
+                    },
+                    "start_column": 16,
+                    "start_line": 24
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb361f898ace8ee5518e"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.101Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.101952526Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.101952526Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "85dc5f95cf",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "42bdfd826660ae8d30520115513b9ee08e12567feeabb2e6e1877b82b8faa53d"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 67,
+                    "end_line": 14,
+                    "snippet": {
+                      "text": "def create_user():\n    user_info = session.get(\"user_info\", None)\n    if user_info is None:\n        return jsonify({\"error\": \"no user_info found in session\"})\n\n    access_level = user_info[2]\n    if access_level != 0:"
+                    },
+                    "start_column": 16,
+                    "start_line": 14
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3631d8262ab835b722"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.760Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.760470718Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.760470718Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "e7a6a82b1d",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "78d1bd0315300956136265dd46921a4ab2b60c2ce0b8a3ff62ff28c3a397c509"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 50,
+                    "end_line": 19,
+                    "snippet": {
+                      "text": "    access_level = user_info[2]\n    if access_level > 2:\n        return jsonify({\"error\": \"access level < 2 is required for this action\"})\n    filename_param = request.form.get(\"filename\")\n    if filename_param is None:\n        return jsonify({\"error\": \"filename parameter is required\"})\n    text_param = request.form.get(\"text\")"
+                    },
+                    "start_column": 22,
+                    "start_line": 19
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3631d8262ab835b7a4"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.472Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.472953481Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.472953481Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "4054868308",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "a2bb314c6bcf5524fec3631ff2e8bb4e45317d4827b0868dc351e075b39680f0"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/status.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 8,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/status\")\ndef status():\n    return jsonify({\"success\": True})\n\n\n@bp.route(\"/ping\")"
+                    },
+                    "start_column": 12,
+                    "start_line": 8
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36401153ed35015a50"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.034Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.034036422Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.034036422Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "d54cd09569",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "c979a6d1bc6af2d921a22cf6e797d6a90ff565cd0b27ee5de595f5e6c11e7f2b"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/ui.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 62,
+                    "end_line": 25,
+                    "snippet": {
+                      "text": "        )\n    except sqlite3.Error as err:\n        message = \"Error while executing query \" + query_param + \": \" + err\n        return render_template(\"error.html\", message=message)"
+                    },
+                    "start_column": 16,
+                    "start_line": 25
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3649146631dfc27155"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.550Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.550787547Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.550787547Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "af98a38086",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "f438ee72fa45a6e2bbf5669eafa251792a6dce87c44613688c155c658a8994ec"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/ui.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 62,
+                    "end_line": 15,
+                    "snippet": {
+                      "text": "    if query_param is None:\n        message = \"please provide the query parameter\"\n        # vulnerability: XSS\n        return render_template(\"error.html\", message=message)\n\n    try:\n        query = \"SELECT username, access_level FROM user WHERE username LIKE ?;\""
+                    },
+                    "start_column": 16,
+                    "start_line": 15
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3649146631dfc271bb"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.865Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.865667109Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.865667109Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "66066c30f7",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "1af32a15448607755ae972903f9d9b4adc7c33a075ae3e3c68d6ed0ed36c6ae9"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 82,
+                    "end_line": 18,
+                    "snippet": {
+                      "text": "        return jsonify({\"error\": \"no user_info found in session\"})\n    access_level = user_info[2]\n    if access_level > 2:\n        return jsonify({\"error\": \"access level < 2 is required for this action\"})\n    filename_param = request.form.get(\"filename\")\n    if filename_param is None:\n        return jsonify({\"error\": \"filename parameter is required\"})"
+                    },
+                    "start_column": 16,
+                    "start_line": 18
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3649146631dfc271f4"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.842Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.842147697Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.842147697Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "6e744745ee",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "4ce5299397de6ed20d740738bab5568566cc4ee54896ec56444774a0050aba62"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 31,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/login_and_redirect\")\ndef login_and_redirect():\n    username = request.args.get(\"username\")\n    password = request.args.get(\"password\")\n    url = request.args.get(\"url\")\n    if username is None or password is None or url is None:"
+                    },
+                    "start_column": 16,
+                    "start_line": 31
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb366af56cce2e90e4e9"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.148Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.148802055Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.148802055Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "e63136168b",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "0f8e0e3b82eb16ce46af8e22e9a44de3b733bd43fa16a3e2dcd118150e6f1d27"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 19,
+                    "snippet": {
+                      "text": "    access_level = user_info[2]\n    if access_level != 0:\n        return jsonify({\"error\": \"access level of 0 is required for this action\"})\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    access_level = request.form.get(\"access_level\")\n    if username is None or password is None or access_level is None:"
+                    },
+                    "start_column": 16,
+                    "start_line": 19
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb366ef42ca568c33612"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.927Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.927084730Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.927084730Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "93595875e5",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "7dbaa7030ec659c9c34ad254e87faa3c14c41d0ae9ae3567e3dda13db16e62c6"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 61,
+                    "snippet": {
+                      "text": "    pickled = request.form.get('pickled')\n    data = base64.urlsafe_b64decode(pickled)\n    # vulnerability: Insecure Deserialization\n    deserialized = pickle.loads(data)\n    return jsonify({\"success\": True, \"description\": str(deserialized)})"
+                    },
+                    "start_column": 20,
+                    "start_line": 61
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb366ef42ca568c336a7"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.818Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.818288362Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.818288362Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "eea86cad1b",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "363f92365cec20ab8445720e3e08f0db068d7f61a821a4a645bdae4e8549c544"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 14,
+                    "end_line": 28,
+                    "snippet": {
+                      "text": "    access_level = request.form.get(\"access_level\")\n    if username is None or password is None or access_level is None:\n        return (\n            jsonify(\n                {\n                    \"error\": \"username, password and access_level parameters have to be provided\"\n                }\n            ),\n            400,\n        )\n    if len(password) < 3:"
+                    },
+                    "start_column": 13,
+                    "start_line": 24
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb368ee24cd6a1ae3ba3"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.818Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.818966353Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.818966353Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "269c919818",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "5937ebb2c6b4171cbdcb4acf0fa9fbf9c9a3cadd195286afced676bda63acd32"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 24,
+                    "snippet": {
+                      "text": "    )\n    result = query_db(query, [], True)\n    if result is None:\n        return jsonify({\"bad_login\": True}), 400\n    session[\"user_info\"] = (result[0], result[1], result[2])\n    return jsonify({\"success\": True})\n"
+                    },
+                    "start_column": 16,
+                    "start_line": 24
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb368ee24cd6a1ae3ba4"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.457Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.457201386Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.457201386Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "a21d0dd510",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "acc0585362ba68843643ec87e3b83ccff7e72db3265a371b6926d823c055ab73"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 67,
+                    "end_line": 15,
+                    "snippet": {
+                      "text": "def log_entry():\n    user_info = session.get(\"user_info\", None)\n    if user_info is None:\n        return jsonify({\"error\": \"no user_info found in session\"})\n    access_level = user_info[2]\n    if access_level > 2:\n        return jsonify({\"error\": \"access level < 2 is required for this action\"})"
+                    },
+                    "start_column": 16,
+                    "start_line": 15
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36967ecb8482c2836a"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.717Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.717052851Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.717052851Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "66b9e43679",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "59d57a4b7885cb64310cf0948a7c3f22bb71a66205818194b13ca9618f3b5fd3"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 34,
+                    "end_line": 33,
+                    "snippet": {
+                      "text": "def login_and_redirect():\n    username = request.args.get(\"username\")\n    password = request.args.get(\"password\")\n    url = request.args.get(\"url\")\n    if username is None or password is None or url is None:\n        return (\n            jsonify("
+                    },
+                    "start_column": 11,
+                    "start_line": 33
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36967ecb8482c2839d"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.793Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.793234008Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.793234008Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "955c172420",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "93891922872f299615b0b48714871ebd6439a32c6cdf8166c126ab6b11a73ad5"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 26,
+                    "snippet": {
+                      "text": "    if result is None:\n        return jsonify({\"bad_login\": True}), 400\n    session[\"user_info\"] = (result[0], result[1], result[2])\n    return jsonify({\"success\": True})\n\n\n@bp.route(\"/login_and_redirect\")"
+                    },
+                    "start_column": 12,
+                    "start_line": 26
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36967ecb8482c283ab"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.010Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.010379180Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.010379180Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "59dc6b9368",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "a5003892fb27e7d2be5a0d04acdbbfb2873ff4515433d4222cbb97e40237eafd"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/ui.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 10,
+                    "end_line": 22,
+                    "snippet": {
+                      "text": "    try:\n        query = \"SELECT username, access_level FROM user WHERE username LIKE ?;\"\n        results = query_db(query, (query_param,))\n        return render_template(\n            \"search.html\", results=results, num_results=len(results), query=query_param\n        )\n    except sqlite3.Error as err:\n        message = \"Error while executing query \" + query_param + \": \" + err\n        return render_template(\"error.html\", message=message)"
+                    },
+                    "start_column": 16,
+                    "start_line": 20
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36ce555dcfa8b57435"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:58.068Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:58.068152992Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:58.068152992Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "a59af687e8",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "f7eef19b42b6ef7b5babe8fb180326add2dbdfa34229813034171e8517a8a8f1"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 42,
+                    "end_line": 45,
+                    "snippet": {
+                      "text": "\n    try:\n        query_db(query, [], False, True)\n        return jsonify({\"success\": True})\n    except sqlite3.Error as err:\n        return jsonify({\"error\": \"could not create user:\" + err})"
+                    },
+                    "start_column": 16,
+                    "start_line": 45
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb36ce555dcfa8b5743f"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.177Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.177623167Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.177623167Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "bdf61d325f",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "ec3042202086d833966694b2752cd4b5db7b044e8da0c78bf5284a51feb77dfc"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 72,
+                    "end_line": 62,
+                    "snippet": {
+                      "text": "    data = base64.urlsafe_b64decode(pickled)\n    # vulnerability: Insecure Deserialization\n    deserialized = pickle.loads(data)\n    return jsonify({\"success\": True, \"description\": str(deserialized)})"
+                    },
+                    "start_column": 12,
+                    "start_line": 62
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb370116fae4a761b1e7"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.279Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.279904466Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.279904466Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "61f6cc9432",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "51eab6875c7bfd8ebb2e66eaa95b26c591a24d226ef233a84bebc4b9953446d5"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 10,
+                    "snippet": {
+                      "text": "@bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    if username is None or password is None:\n        return (\n            jsonify({\"error\": \"username and password parameter have to be provided\"}),"
+                    },
+                    "start_column": 16,
+                    "start_line": 10
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb370116fae4a761b1f7"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.912Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-89",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.912360205Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.912360205Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "876eac8e8d",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "eea88e7cbf9e3ef622874b7426f361c42b9fe3f68c9cd6780a0f435b10365619"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/ui.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 50,
+                    "end_line": 19,
+                    "snippet": {
+                      "text": "\n    try:\n        query = \"SELECT username, access_level FROM user WHERE username LIKE ?;\"\n        results = query_db(query, (query_param,))\n        return render_template(\n            \"search.html\", results=results, num_results=len(results), query=query_param\n        )"
+                    },
+                    "start_column": 19,
+                    "start_line": 19
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-89 - SQL Injection\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-89"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-89 - SQL Injection\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-89 - SQL Injection\" found(python-sinks-cwe-89)",
+            "rule_uuid": "67ecea64ce555dcfa8b4d6d2",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb370116fae4a761b25d"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.510Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.510034732Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.510034732Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "0b9d353d58",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "8dec5d8946f7173c3c955e8241b70d74ee0e7e280a7e7b14cf3583e785a7e85b"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 37,
+                    "snippet": {
+                      "text": "    with path.open(\"w\", encoding=\"utf-8\") as open_file:\n        # vulnerability: Directory Traversal\n        open_file.write(text_param)\n    return jsonify({\"success\": True})\n\n\n@bp.route(\"/grep_processes\")"
+                    },
+                    "start_column": 12,
+                    "start_line": 37
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb370aa70b0637d33b2c"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.977Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.977282490Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.977282490Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "83ac4a5e6a",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "79ddd2e19c7a24cfca701c03b3378b34f4c6f6d05c59e99d0fba24a117740e05"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/ui.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 11,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/search\")\ndef search():\n    query_param = request.args.get(\"query\")\n    if query_param is None:\n        message = \"please provide the query parameter\"\n        # vulnerability: XSS"
+                    },
+                    "start_column": 19,
+                    "start_line": 11
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb370aa70b0637d33b78"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.439Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.439853588Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.439853588Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "ba6fec8e47",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "e1cc7ca5bd32dd777e7ea20baddaed62fc9d19076b97a8f1d6487b65971d2fe9"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 68,
+                    "end_line": 21,
+                    "snippet": {
+                      "text": "        return jsonify({\"error\": \"access level < 2 is required for this action\"})\n    filename_param = request.form.get(\"filename\")\n    if filename_param is None:\n        return jsonify({\"error\": \"filename parameter is required\"})\n    text_param = request.form.get(\"text\")\n    if text_param is None:\n        return jsonify({\"error\": \"text parameter is required\"})"
+                    },
+                    "start_column": 16,
+                    "start_line": 21
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb371f898ace8ee5520b"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.459Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.459159189Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.459159189Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "78bf221a60",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "ad9f1e207265c2a46070cc5a014b60e643163aecafdb6695289709e7ac9f47e0"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 20,
+                    "snippet": {
+                      "text": "    if access_level != 0:\n        return jsonify({\"error\": \"access level of 0 is required for this action\"})\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    access_level = request.form.get(\"access_level\")\n    if username is None or password is None or access_level is None:\n        return ("
+                    },
+                    "start_column": 16,
+                    "start_line": 20
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3731d8262ab835b815"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.546Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.546857164Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.546857164Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "fdbcaf38a1",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "fc81df2d2cf9d74340cbdd5e58409d90c0b6bc7cb7ceba134bc6b5ded0807f10"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 42,
+                    "end_line": 58,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/deserialized_descr\", methods=[\"POST\"])\ndef deserialized_descr():\n    pickled = request.form.get('pickled')\n    data = base64.urlsafe_b64decode(pickled)\n    # vulnerability: Insecure Deserialization\n    deserialized = pickle.loads(data)"
+                    },
+                    "start_column": 15,
+                    "start_line": 58
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb37401153ed35015b03"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.142Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.142548773Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.142548773Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "0b8b18df03",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "bdc883732828e816579fb2863de37b62674d8b5f2d615ebe51bfc4d92f7f18e8"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 14,
+                    "end_line": 38,
+                    "snippet": {
+                      "text": "    url = request.args.get(\"url\")\n    if username is None or password is None or url is None:\n        return (\n            jsonify(\n                {\"error\": \"username, password, and url parameters have to be provided\"}\n            ),\n            400,\n        )\n"
+                    },
+                    "start_column": 13,
+                    "start_line": 36
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb376af56cce2e90e520"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.213Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.213422882Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.213422882Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "be904a918e",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "d748c041d61633d31a618fb724a8fbd1f7303dc04800a6f2e51451e0df9d9825"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 48,
+                    "snippet": {
+                      "text": "        # vulnerability: Open Redirect\n        return redirect(url)\n    session[\"user_info\"] = (result[0], result[1], result[2])\n    return jsonify({\"success\": True})"
+                    },
+                    "start_column": 12,
+                    "start_line": 48
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb376af56cce2e90e52c"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.409Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.409333734Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.409333734Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "d62d65e0d1",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "32ce7efe580e3b55659b398aa78c3f8b0bd06478f882be2d93de159262cdbbb6"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 36,
+                    "end_line": 42,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/grep_processes\")\ndef grep_processes():\n    name = request.args.get(\"name\")\n    # vulnerability: Remote Code Execution\n    res = subprocess.run(\n        [\"ps aux | grep \" + name + \" | awk '{print $11}'\"],"
+                    },
+                    "start_column": 12,
+                    "start_line": 42
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb376af56cce2e90e547"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.489Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.489628388Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.489628388Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "cec71c0a27",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "6c9444bed62a861e0558ef21b61b378c680a2071a1f0ea027627ecbee20d56c9"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 86,
+                    "end_line": 13,
+                    "snippet": {
+                      "text": "    password = request.form.get(\"password\")\n    if username is None or password is None:\n        return (\n            jsonify({\"error\": \"username and password parameter have to be provided\"}),\n            400,\n        )\n"
+                    },
+                    "start_column": 13,
+                    "start_line": 13
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb376ef42ca568c33700"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.868Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.868211251Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.868211251Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "aa427344ac",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "1a5687f8d6422a0b068aaf08f90e34fcb3f9cf1cf41b0296e82a1f5983b92c4d"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 47,
+                    "end_line": 13,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/message\", methods=[\"POST\"])\ndef log_entry():\n    user_info = session.get(\"user_info\", None)\n    if user_info is None:\n        return jsonify({\"error\": \"no user_info found in session\"})\n    access_level = user_info[2]"
+                    },
+                    "start_column": 17,
+                    "start_line": 13
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb376ef42ca568c33741"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.326Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.326471496Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.326471496Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "18b02b7711",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "e06f12187a29524481ff0f3f28fb3fe8006cdf7aadf45ca59557aae769c85441"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 42,
+                    "end_line": 22,
+                    "snippet": {
+                      "text": "    filename_param = request.form.get(\"filename\")\n    if filename_param is None:\n        return jsonify({\"error\": \"filename parameter is required\"})\n    text_param = request.form.get(\"text\")\n    if text_param is None:\n        return jsonify({\"error\": \"text parameter is required\"})\n"
+                    },
+                    "start_column": 18,
+                    "start_line": 22
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb378ee24cd6a1ae3bfb"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.565Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-89",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.565957282Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.565957282Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "4a47353c94",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "540057d1dcdb600a93b47033be50829718a9ad2164c3664ad73966dd2d638bee"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 41,
+                    "end_line": 44,
+                    "snippet": {
+                      "text": "    )\n\n    try:\n        query_db(query, [], False, True)\n        return jsonify({\"success\": True})\n    except sqlite3.Error as err:\n        return jsonify({\"error\": \"could not create user:\" + err})"
+                    },
+                    "start_column": 9,
+                    "start_line": 44
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-89 - SQL Injection\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-89"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-89 - SQL Injection\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-89 - SQL Injection\" found(python-sinks-cwe-89)",
+            "rule_uuid": "67ecea64ce555dcfa8b4d6d2",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb378ee24cd6a1ae3c21"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.746Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.746135315Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.746135315Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "a266fb8d7f",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "c2bbbf87c7a80b7bb734922b78b8627cd8f3b705e043d9d49c1b1da3838a2eac"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/actions.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 54,
+                    "end_line": 53,
+                    "snippet": {
+                      "text": "        return jsonify({\"error\": \"no stdout returned\"})\n    out = res.stdout.decode(\"utf-8\")\n    names = out.split(\"\\n\")\n    return jsonify({\"success\": True, \"names\": names})\n\n\n@bp.route(\"/deserialized_descr\", methods=[\"POST\"])"
+                    },
+                    "start_column": 12,
+                    "start_line": 53
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb37967ecb8482c2844a"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.073Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.073660264Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.073660264Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "75124cc7c1",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "f0dc385ff9c2040a2f2e8142a5ac80f22cdadca27f2126b0e069a80d3981e2e4"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 9,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    if username is None or password is None:\n        return ("
+                    },
+                    "start_column": 16,
+                    "start_line": 9
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb37afbb353e5423144c"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:45:59.843Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-89",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:45:59.843665767Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:45:59.843665767Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "44d4543b3f",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "84276672122b89fadf25faabd5100a3eae82f8df0ad2c8cc7776488360384b22"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 39,
+                    "end_line": 22,
+                    "snippet": {
+                      "text": "        \"SELECT id, username, access_level FROM user WHERE username = '%s' AND password = '%s'\"\n        % (username, password)\n    )\n    result = query_db(query, [], True)\n    if result is None:\n        return jsonify({\"bad_login\": True}), 400\n    session[\"user_info\"] = (result[0], result[1], result[2])"
+                    },
+                    "start_column": 14,
+                    "start_line": 22
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-89 - SQL Injection\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-89"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-89 - SQL Injection\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-89 - SQL Injection\" found(python-sinks-cwe-89)",
+            "rule_uuid": "67ecea64ce555dcfa8b4d6d2",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb37ce555dcfa8b57575"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.000753241Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.000753241Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "80aa0143f5",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "defc88046317b02edeed6d7ed22106c55f815dacc4071669d2b7a6974949e0f6"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 86,
+                    "end_line": 33,
+                    "snippet": {
+                      "text": "        )\n    if len(password) < 3:\n        return (\n            jsonify({\"error\": \"the password needs to be at least 3 characters long\"}),\n            402,\n        )\n"
+                    },
+                    "start_column": 13,
+                    "start_line": 33
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb380116fae4a761b26a"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.142Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.142258877Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.142258877Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "a6253bd43a",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "98c555dc2d06a92169540acd9be4f59c8ccdb65ef9cdd3dc4d84b7131fd56d97"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 44,
+                    "end_line": 32,
+                    "snippet": {
+                      "text": "@bp.route(\"/login_and_redirect\")\ndef login_and_redirect():\n    username = request.args.get(\"username\")\n    password = request.args.get(\"password\")\n    url = request.args.get(\"url\")\n    if username is None or password is None or url is None:\n        return ("
+                    },
+                    "start_column": 16,
+                    "start_line": 32
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb380116fae4a761b27f"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.439Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-89",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.439789617Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.439789617Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "0dbcb827a6",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "eef91df306287c95b73c185a30b53347ac58df9a0e41b9515901a5ff83e09835"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/__init__.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 49,
+                    "end_line": 14,
+                    "snippet": {
+                      "text": "    with sqlite3.connect(DB_FILENAME) as conn:\n        # vulnerability: Sensitive Data Exposure\n        conn.set_trace_callback(print)\n        cur = conn.cursor().execute(query, args)\n        if commit:\n            conn.commit()\n        return cur.fetchone() if one else cur.fetchall()"
+                    },
+                    "start_column": 15,
+                    "start_line": 14
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-89 - SQL Injection\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-89"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-89 - SQL Injection\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-89 - SQL Injection\" found(python-sinks-cwe-89)",
+            "rule_uuid": "67ecea64ce555dcfa8b4d6d2",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb381f898ace8ee552a9"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.120Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-89",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.120343366Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.120343366Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "310fba210e",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "0e0918e5280aac7b581b46ac049f6275b5650c67cf4fb874e727da68bfe4e368"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/auth.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 57,
+                    "end_line": 43,
+                    "snippet": {
+                      "text": "        )\n\n    query = \"SELECT id, username, access_level FROM user WHERE username = ? AND password = ?\"\n    result = query_db(query, (username, password), True)\n    if result is None:\n        # vulnerability: Open Redirect\n        return redirect(url)"
+                    },
+                    "start_column": 14,
+                    "start_line": 43
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-89 - SQL Injection\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-89"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-89 - SQL Injection\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-89 - SQL Injection\" found(python-sinks-cwe-89)",
+            "rule_uuid": "67ecea64ce555dcfa8b4d6d2",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb38401153ed35015b5b"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.046Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sinks-cwe-79",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.046776524Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.046776524Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "5a3afd1080",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "0452b30fde1efa7a086c2954a2f2a0ab43d141487ca7e418b467137bae928ae5"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/status.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 38,
+                    "end_line": 13,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/ping\")\ndef ping():\n    return jsonify({\"success\": True})"
+                    },
+                    "start_column": 12,
+                    "start_line": 13
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Sink for \"CWE-79 - XSS\" found"
+            },
+            "properties": {},
+            "rule_id": "python-sinks-cwe-79"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sink for \"CWE-79 - XSS\" found",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sink for \"CWE-79 - XSS\" found(python-sinks-cwe-79)",
+            "rule_uuid": "67ecea64401153ed3500bc79",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb3849146631dfc272ae"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.028Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.028930393Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.028930393Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "b0bb7c5225",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "d3b8324860521d10d6a99afaa7e4d14546665162e91820b63919e4d5057e0662"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 52,
+                    "end_line": 21,
+                    "snippet": {
+                      "text": "        return jsonify({\"error\": \"access level of 0 is required for this action\"})\n    username = request.form.get(\"username\")\n    password = request.form.get(\"password\")\n    access_level = request.form.get(\"access_level\")\n    if username is None or password is None or access_level is None:\n        return (\n            jsonify("
+                    },
+                    "start_column": 20,
+                    "start_line": 21
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb386ef42ca568c33759"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.177Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.177301967Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.177301967Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "36fc1b5fef",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "8f725c159d701b9d8f48f2f4447416a5d40f6d0215aeca851fbd9d71502c0891"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/__init__.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 30,
+                    "end_line": 17,
+                    "snippet": {
+                      "text": "        cur = conn.cursor().execute(query, args)\n        if commit:\n            conn.commit()\n        return cur.fetchone() if one else cur.fetchall()\n\n\ndef create_app():"
+                    },
+                    "start_column": 16,
+                    "start_line": 17
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb386ef42ca568c3376e"
+      },
+      {
+        "context": {
+          "id": "default",
+          "type": "CONTEXT_TYPE_MAIN"
+        },
+        "meta": {
+          "create_time": "2025-04-02T07:46:00.103Z",
+          "created_by": "henrik@endor.ai@google",
+          "kind": "LinterResult",
+          "name": "python-sources",
+          "parent_kind": "RepositoryVersion",
+          "parent_uuid": "67ebf17a1f898ace8e9dcb68",
+          "update_time": "2025-04-02T07:46:00.103351038Z",
+          "updated_by": "henrik@endor.ai@google",
+          "upsert_time": "2025-04-02T07:46:00.103351038Z",
+          "version": "v1"
+        },
+        "spec": {
+          "extra_key": "6bf6052c6e",
+          "fingerprint_count": 1,
+          "fingerprints": [
+            "fdfdc490132f471e002acbbb35295c578640ce122a80be7ee5078d3e8975638d"
+          ],
+          "level": "LINTER_RESULT_LEVEL_INFO",
+          "origin": "LINTER_RESULT_ORIGIN_SAST_SCANNER",
+          "project_uuid": "67ebf1790aa70b06378bb7e8",
+          "ref": "master",
+          "sarif_result": {
+            "fingerprints": {
+              "id": "requires login"
+            },
+            "locations": [
+              {
+                "physical_location": {
+                  "artifact_location": {
+                    "uri": "flask_webgoat/users.py",
+                    "uri_base_id": "%SRCROOT%"
+                  },
+                  "region": {
+                    "end_column": 47,
+                    "end_line": 12,
+                    "snippet": {
+                      "text": "\n@bp.route(\"/create_user\", methods=[\"POST\"])\ndef create_user():\n    user_info = session.get(\"user_info\", None)\n    if user_info is None:\n        return jsonify({\"error\": \"no user_info found in session\"})\n"
+                    },
+                    "start_column": 17,
+                    "start_line": 12
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": "Source found"
+            },
+            "properties": {},
+            "rule_id": "python-sources"
+          },
+          "semgrep": {
+            "confidence": "HIGH",
+            "description": "Sources for python",
+            "explanation": "na",
+            "impact": "LOW",
+            "languages": [
+              "python"
+            ],
+            "likelihood": "LOW",
+            "remediation": "na",
+            "rule_name": "Sources for python(python-sources)",
+            "rule_uuid": "67ecea6431d8262ab83519cb",
+            "rule_version": "v1.0.0",
+            "severity": "MEDIUM"
+          },
+          "version": "2.1.0"
+        },
+        "tenant_meta": {
+          "namespace": "henrik-report.sast-ai-demo"
+        },
+        "uuid": "67eceb38afbb353e542314ea"
+      }
+    ],
+    "response": {}
+  }
+}
+
